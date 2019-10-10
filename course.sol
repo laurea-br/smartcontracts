@@ -25,9 +25,9 @@ contract LaureaCourse {
     Class[] classes;
     
     struct Student {
-        address studentWallet;
         string studentName;
         uint256 nationalID;
+        address studentWallet;
         uint256 numberOfClasses;
         string evaluation;
         bool active;
@@ -142,13 +142,13 @@ contract LaureaCourse {
     }
     
     function addStudent (
-        address _studentWallet,
         string memory _studentName,
-        uint256 _nationalID
+        uint256 _nationalID,
+        address _studentWallet
         ) public returns (bool)
     {
         require (msg.sender == schoolWallet);
-        Student memory s = Student( _studentWallet, _studentName, _nationalID, 0, "Em Andamento", true, false, false);
+        Student memory s = Student(_studentName, _nationalID, _studentWallet, 0, "Em Andamento", true, false, false);
         students.push(s);
         numberOfStudents ++;
         emit StudentCreated(students.length-1, _nationalID, _studentName);
@@ -240,13 +240,13 @@ contract LaureaCourse {
     }
     
     function addCertificate (
-        address _studentWallet,
         string memory _studentName,
-        uint256 _nationalID
+        uint256 _nationalID,
+        address _studentWallet
         ) public returns (bool)
     {
         require (msg.sender == schoolWallet);
-        Student memory s = Student( _studentWallet, _studentName, _nationalID, 0, "Aprovado", true, true, true);
+        Student memory s = Student( _studentName, _nationalID, _studentWallet, 0, "Aprovado", true, true, true);
         students.push(s);
         numberOfStudents ++;
         studentsLaurated ++;
