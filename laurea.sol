@@ -13,32 +13,32 @@ contract CertificateDiploma {
     
     struct Student {
         string name;
-        string nationalID;
+        uint nationalID;
         string countryCode;
         address studentAddress;
         bool active;
-        bool laurated;
     }
     
     struct Course {
         string name;
         string internalID;
-        string description;
         string teacherName;
         string schoolPrincipalName;
-        uint startDate;
-        uint finishDate;
+        string startDate;
+        string finishDate;
         uint cargaHoraria;
         bool exists;
+        //mapping(uint256 => Student) studentsList;
     }
     
-    event StudentLaurated(uint indexed courseID, bytes32 indexed nationalID, uint256 indexed studentID);
+    event StudentLaurated(uint indexed courseID, uint256 indexed nationalID, uint256 indexed studentID);
     event CourseCreated(uint256 indexed courseID, string courseName);
+    event CourseEdited(uint256 indexed courseID, string courseName);
     
     School public school;
     Course[] public courses;
-    mapping(bytes32 => Student) students;
-    Student[] arrayStudents;
+    mapping(uint256 => Student) public students;
+    Student[] public arrayStudents;
     
     constructor(string memory _name, string memory _taxID, string memory _countrycode) public {
         school = School(_name, _taxID, _countrycode, msg.sender);
@@ -47,18 +47,17 @@ contract CertificateDiploma {
     function addCourse(
         string memory _name,
         string memory _internalID,
-        string memory _description,
         string memory _teacherName,
         string memory _schoolPrincipalName,
-        uint _cargaHoraria,
-        uint _startDate,
-        uint _finishDate
+        uint256 _cargaHoraria,
+        string memory _startDate,
+        string memory _finishDate
     )
     public
     returns (bool)
     {
-        
-        Course memory c = Course( _name, _internalID, _description, _teacherName, _schoolPrincipalName, _cargaHoraria, _startDate, _finishDate, true);
+        //require (msg.sender == wallets);
+        Course memory c = Course( _name, _internalID, _teacherName, _schoolPrincipalName, _startDate, _finishDate, _cargaHoraria, true);
         courses.push(c);
         emit CourseCreated(courses.length-1, _name);
         return true;
@@ -67,7 +66,7 @@ contract CertificateDiploma {
     function addStudentIntoCourse(
         uint _courseID,
         string memory _name,
-        string memory _nationalID,
+        uint _nationalID,
         string memory _countryCode,
         address _studentAddress)
         public
@@ -75,26 +74,14 @@ contract CertificateDiploma {
     {
         //require (msg.sender == wallets);
         require(courses[_courseID].exists, "Course ID supplied does not exists");
-        Student memory s = Student(_name, _nationalID, _countryCode, _studentAddress, false, false);
-        students[stringToBytes32(_nationalID)] = s;
+        Student memory s = Student(_name, _nationalID, _countryCode, _studentAddress, true);
+        students[_nationalID] = s;
         arrayStudents.push(s);
-        emit StudentLaurated(_courseID, stringToBytes32(_nationalID), arrayStudents.length);
+        emit StudentLaurated(_courseID, _nationalID, arrayStudents.length);
         return true;
     }
     
-    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
-        bytes memory tempEmptyStringTest = bytes(source);
-        if (tempEmptyStringTest.length == 0) {
-            return 0x0;
-        }
-    
-        assembly {
-            result := mload(add(source, 32))
-        }
-    }
-    
-    
-    function anonymizeCertificate(bytes32 studentID) public returns(bool) 
+    function anonymizeCertificate(uint256 studentID) public returns(bool) 
     {
         //require (msg.sender == wallets);
         if (students[studentID].active == true){
@@ -107,10 +94,11 @@ contract CertificateDiploma {
         }
     }
     
-    function showCertificate(bytes32 studentID, uint256 courseID) public view returns (string memory, string memory, string memory, string memory, uint, uint, uint) {
+    //falta relacionar aluno e curso
+    function showCertificate(uint256 studentID, uint256 courseID) public view returns (string memory, string memory, string memory, string memory, string memory, string memory, uint) {
         require (students[studentID].active == true);
-        Student memory s = students[studentID];
-        Course memory c = courses[courseID];
+        Student storage s = students[studentID];
+        Course storage c = courses[courseID];
         return(s.name, c.name, c.schoolPrincipalName, c.teacherName, c.startDate, c.finishDate, c.cargaHoraria);
     }
 }
