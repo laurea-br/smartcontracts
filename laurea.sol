@@ -1,9 +1,8 @@
-  
 pragma solidity 0.5.11;
 
 contract CertificateDiploma {
     
-    address [] wallets;
+    //address [] wallets;
     
     struct School {
         string name;
