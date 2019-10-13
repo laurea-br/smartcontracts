@@ -1,14 +1,14 @@
 pragma solidity 0.5.11;
 
-contract CertificateDiploma {
-    
-    //address [] wallets;
+contract CertificateLaurea {
     
     struct School {
         string name;
         string taxID;
         string countryCode;
-        address schoolAddress;
+        address schoolAddress1;
+        address schoolAddress2;
+        address schoolAddress3;
     }
     
     struct Student {
@@ -28,20 +28,27 @@ contract CertificateDiploma {
         string finishDate;
         uint cargaHoraria;
         bool exists;
-        //mapping(uint256 => Student) studentsList;
+        mapping(uint256 => Student) studentsList;
     }
     
     event StudentLaurated(uint indexed courseID, uint256 indexed nationalID, uint256 indexed studentID);
     event CourseCreated(uint256 indexed courseID, string courseName);
-    event CourseEdited(uint256 indexed courseID, string courseName);
     
     School public school;
     Course[] public courses;
     mapping(uint256 => Student) public students;
     Student[] public arrayStudents;
     
-    constructor(string memory _name, string memory _taxID, string memory _countrycode) public {
-        school = School(_name, _taxID, _countrycode, msg.sender);
+    constructor(string memory _name, 
+        string memory _taxID, 
+        string memory _countrycode, 
+        address _schoolAddress1, 
+        address _schoolAddress2, 
+        address _schoolAddress3
+    ) 
+    public 
+    {
+        school = School(_name, _taxID, _countrycode, _schoolAddress1, _schoolAddress2, _schoolAddress3);
     }
     
     function addCourse(
@@ -56,7 +63,7 @@ contract CertificateDiploma {
     public
     returns (bool)
     {
-        //require (msg.sender == wallets);
+        require (msg.sender == school.schoolAddress1 || msg.sender == school.schoolAddress2 || msg.sender == school.schoolAddress3);
         Course memory c = Course( _name, _internalID, _teacherName, _schoolPrincipalName, _startDate, _finishDate, _cargaHoraria, true);
         courses.push(c);
         emit CourseCreated(courses.length-1, _name);
@@ -72,18 +79,20 @@ contract CertificateDiploma {
         public
         returns (bool) 
     {
-        //require (msg.sender == wallets);
+        require (msg.sender == school.schoolAddress1 || msg.sender == school.schoolAddress2 || msg.sender == school.schoolAddress3);
         require(courses[_courseID].exists, "Course ID supplied does not exists");
         Student memory s = Student(_name, _nationalID, _countryCode, _studentAddress, true);
         students[_nationalID] = s;
         arrayStudents.push(s);
+        courses[_courseID].studentsList[_nationalID] = s;
         emit StudentLaurated(_courseID, _nationalID, arrayStudents.length);
         return true;
     }
     
+    
     function anonymizeCertificate(uint256 studentID) public returns(bool) 
     {
-        //require (msg.sender == wallets);
+        require (msg.sender == school.schoolAddress1 || msg.sender == school.schoolAddress2 || msg.sender == school.schoolAddress3);
         if (students[studentID].active == true){
             students[studentID].active = false;
             return true;
