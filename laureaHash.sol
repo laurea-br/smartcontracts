@@ -71,7 +71,7 @@ contract Laurea {
     }
     
     function alterarEstadoCertificado (uint _cpf, string memory _codigoCurso) public returns(bool) {
-        CertificadoAluno memory ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
+        CertificadoAluno storage ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
         if (ca.exists == true) {
             ca.exists = false;
             return (true);
