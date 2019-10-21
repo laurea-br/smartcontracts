@@ -1,19 +1,15 @@
 pragma solidity 0.5.12;
 
 contract Laurea {
-    
-    address laurea; 
 
     struct School {
         string name;
-        uint taxID;
-        address schoolAddress1;
-        address schoolAddress2;
-        address schoolAddress3;
+        string taxID;
+        address schoolAddress;
     }
     
     struct CertificadoAluno {
-        uint cpf;
+        string cpf;
         string codigoCurso;
         string nomeAluno;
         string nomeCurso;
@@ -27,32 +23,28 @@ contract Laurea {
     School public school;
     mapping(bytes32 => CertificadoAluno) public certificados;
     
-    event StudentLaurated(string indexed codigoCurso, uint indexed cpf, string nomeCurso, string nomeAluno, bytes32 hashCertificado);
+    event StudentLaurated(string indexed codigoCurso, string indexed cpf, string nomeCurso, string nomeAluno, bytes32 hashCertificado);
     
-    constructor(string memory _name, 
-        uint _taxID, 
-        address _schoolAddress1, 
-        address _schoolAddress2, 
-        address _schoolAddress3
+    constructor(
+        string memory _name, 
+        string memory _taxID, 
+        address _schoolAddress
     ) 
     public 
     {
-        laurea = msg.sender;
-        school = School(_name, _taxID, _schoolAddress1, _schoolAddress2, _schoolAddress3);
+        school = School(_name, _taxID, _schoolAddress);
     }
     
     function editSchool(
         string memory _name, 
-        uint _taxID, 
-        address _schoolAddress1, 
-        address _schoolAddress2, 
-        address _schoolAddress3
+        string memory _taxID, 
+        address _schoolAddress
         ) public {
-        school = School(_name, _taxID, _schoolAddress1, _schoolAddress2, _schoolAddress3);
+        school = School(_name, _taxID, _schoolAddress);
     }
     
     function addCertificado(
-        uint _cpf, 
+        string memory _cpf, 
         string memory _codigoCurso, 
         string memory _nomeAluno, 
         string memory _nomeCurso,
@@ -70,7 +62,7 @@ contract Laurea {
         return hashCertificado;
     }
     
-    function alterarEstadoCertificado (uint _cpf, string memory _codigoCurso) public returns(bool) {
+    function alterarEstadoCertificado (string memory _cpf, string memory _codigoCurso) public returns(bool) {
         CertificadoAluno storage ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
         if (ca.exists == true) {
             ca.exists = false;
@@ -82,10 +74,10 @@ contract Laurea {
         }
     }
     
-    function buscarCertificado(uint _cpf, string memory _codigoCurso)
+    function buscarCertificado(string memory _cpf, string memory _codigoCurso)
         public
         view
-        returns (uint, string memory, string memory, string memory, string memory, string memory, uint, bytes32)
+        returns (string memory, string memory, string memory, string memory, string memory, string memory, uint, bytes32)
     {
         CertificadoAluno memory ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
         require(ca.exists, "Certificado não localizado");
