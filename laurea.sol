@@ -41,6 +41,7 @@ contract Laurea {
         string memory _taxID, 
         address _schoolAddress
         ) public {
+        require (msg.sender == school.schoolAddress || msg.sender == laurea);
         school = School(_name, _taxID, _schoolAddress);
     }
     
@@ -55,6 +56,7 @@ contract Laurea {
         public
         returns (bytes32)
     {
+        require (msg.sender == school.schoolAddress || msg.sender == laurea);
         bytes32 hashCertificado = keccak256(abi.encodePacked(_cpf, _codigoCurso));
         CertificadoAluno memory ca = CertificadoAluno(_cpf, _codigoCurso, _nomeAluno, _nomeCurso, _dataInicioFim, _cargaHoraria, hashCertificado, true);
         certificados[hashCertificado] = ca;
@@ -63,6 +65,7 @@ contract Laurea {
     }
     
     function alterarEstadoCertificado (uint _cpf, string memory _codigoCurso) public returns(bool) {
+        require (msg.sender == school.schoolAddress || msg.sender == laurea);
         CertificadoAluno storage ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
         if (ca.exists == true) {
             ca.exists = false;
@@ -80,7 +83,17 @@ contract Laurea {
         returns (string memory, string memory, string memory, string memory, string memory, uint, bytes32)
     {
         CertificadoAluno memory ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
-        require(ca.exists, "Certificado não localizado");
+        require(ca.exists = true, "Certificado não localizado");
+        return (ca.cpf, ca.codigoCurso, ca.nomeAluno, ca.nomeCurso, ca.dataInicioFim, ca.cargaHoraria, ca.hashCertificado);
+    }
+    
+    function buscarCertificadoHash(bytes32 _hash)
+        public
+        view
+        returns (string memory, string memory, string memory, string memory, string memory, uint, bytes32)
+    {
+        CertificadoAluno memory ca = certificados[_hash];
+        require(ca.exists =true, "Certificado não localizado");
         return (ca.cpf, ca.codigoCurso, ca.nomeAluno, ca.nomeCurso, ca.dataInicioFim, ca.cargaHoraria, ca.hashCertificado);
     }
 }
