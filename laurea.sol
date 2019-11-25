@@ -83,7 +83,7 @@ contract Laurea {
         returns (string memory, string memory, string memory, string memory, string memory, uint, bytes32)
     {
         CertificadoAluno memory ca = certificados[keccak256(abi.encodePacked(_cpf, _codigoCurso))];
-        require(ca.exists = true, "Certificado não localizado");
+        require(ca.exists == true, "Certificado não localizado");
         return (ca.cpf, ca.codigoCurso, ca.nomeAluno, ca.nomeCurso, ca.dataInicioFim, ca.cargaHoraria, ca.hashCertificado);
     }
     
@@ -93,7 +93,7 @@ contract Laurea {
         returns (string memory, string memory, string memory, string memory, string memory, uint, bytes32)
     {
         CertificadoAluno memory ca = certificados[_hash];
-        require(ca.exists =true, "Certificado não localizado");
+        require(ca.exists == true, "Certificado não localizado");
         return (ca.cpf, ca.codigoCurso, ca.nomeAluno, ca.nomeCurso, ca.dataInicioFim, ca.cargaHoraria, ca.hashCertificado);
     }
 }
