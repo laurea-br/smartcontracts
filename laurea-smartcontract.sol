@@ -64,8 +64,7 @@ contract Laurea {
         if (s.status == true) {
             s.status = false;
             return true;
-        } 
-        else { 
+        } else { 
             s.status = true;
             return true;
         }
@@ -97,8 +96,7 @@ contract Laurea {
         if (ca.exists == true) {
             ca.exists = false;
             return true;
-        } 
-        else { 
+        } else { 
             ca.exists = true;
             return true;
         }
