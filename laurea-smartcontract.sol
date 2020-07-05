@@ -43,7 +43,7 @@ contract Laurea {
     
     function addSchool(address _schoolAddress, string memory _name, string memory _taxID) public returns(bool) {
         require (msg.sender == laurea);
-        School memory s = School(_schoolAddress, _name, _taxID);
+        School memory s = School(_schoolAddress, _name, _taxID, true);
         escolas[_schoolAddress] = s;
         emit SchoolCreated (s.schoolAddress, s.name, s.taxID);
         return true;
@@ -56,6 +56,19 @@ contract Laurea {
         s.name = _name;
         s.taxID = _taxID;
         return true;
+    }
+    
+    function alterarEstadoEscola (address _schoolAddress) public returns(bool) {
+        require (msg.sender == laurea);
+        School storage s = escolas[_schoolAddress];
+        if (s.status == true) {
+            s.status = false;
+            return true;
+        } 
+        else { 
+            s.status = true;
+            return true;
+        }
     }
     
     function addCertificado(address _schoolAddress, string memory _codigoAluno, string memory _codigoCurso, string memory _nomeAluno, string memory _nomeCurso, string memory  _dataInicioFim,  uint8 _cargaHoraria) public returns (bytes32) {
@@ -91,11 +104,13 @@ contract Laurea {
         }
     }
     
-    function buscarCertificadoEscola(address _schoolAddress) public view returns (bytes32[] memory policyAddress)
+    function buscarCertificadoEscola(address _schoolAddress) public view returns (bytes32[] memory policyAddress){
+        
+    }
     
     function buscarEscola(address _schoolAddress) public view returns (address, string memory, string memory) {
         School memory s = escolas[_schoolAddress];
-        return 
+        return (s.schoolAddress, s.name, s.taxID); 
     }
     
     function buscarCertificado(address _schoolAddress, string memory _codigoAluno, string memory _codigoCurso) public view returns (string memory, string memory, string memory, string memory, string memory, uint, bytes32) {
